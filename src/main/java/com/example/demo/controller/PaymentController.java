@@ -12,8 +12,11 @@ import com.example.demo.services.UsersService;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import com.razorpay.Utils;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Controller
 public class PaymentController {
@@ -54,4 +57,19 @@ public class PaymentController {
 			return order.toString();
 		}
 	}
+	@PostMapping("/verify")
+	@ResponseBody
+	public boolean verifyPayment(@RequestBody String orderId,@RequestBody String paymentId,@RequestBody String  signature  ) {
+		try {
+			RazorpayClient razorpayClient=new RazorpayClient("rzp_test_603GOgijKEDIj5", "ZcTIbF5IA6wGMN3usI3rUEjo");
+			String verificationData=orderId+" | "+paymentId;
+			boolean isValidSignature=Utils.verifySignature(verificationData, signature, "ZcTIbF5IA6wGMN3usI3rUEjo");
+			return isValidSignature;
+		}catch (RazorpayException e) {
+			e.printStackTrace();
+			return false;
+		}
+		//return entity;
+	}
+	
 }
